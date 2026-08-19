@@ -26,9 +26,9 @@ def get_api_key() -> str:
             check=True,
         )
     except FileNotFoundError:
-        sys.exit("Error: secret-tool not found. Please install libsecret-tools!")
+        sys.exit("Error: secret-tool not found. Please install libsecret-tools.")
     except subprocess.CalledProcessError:
-        sys.exit("Error: No OpenRouter API key found in secret-tool!")
+        sys.exit("Error: No OpenRouter API key found in secret-tool.")
 
     key = result.stdout.strip()
     if not key:
@@ -86,7 +86,7 @@ def build_system_prompt(prompt_name: str | None) -> str:
 
 def gather_input(files: list[str]) -> str:
     if files:
-        # Positional args are files if they exist on disk, otherwise treat the whole thing as raw text typed directly on the command line.
+        # Positional arguments are treated as files if they exist on disk, otherwise treat the whole thing as raw text typed directly on the command line.
         if all(Path(f).is_file() for f in files):
             texts = [Path(f).read_text(encoding="utf-8") for f in files]
             return "\n\n".join(texts)
@@ -139,12 +139,12 @@ def show_diff(original: str, revised: str, label: str) -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(prog="orq", description="orq is a small CLI wrapper for interacting with OpenRouter AI models.")
+    parser = argparse.ArgumentParser(prog="orq", description="orq is a small CLI wrapper for interacting with OpenRouter AI models. orq will automatically look for AGENTS.md in your current working directory (or any of its parent directories) and prepend its content is to the system prompt.")
     parser.add_argument("-p", "--prompt", help="name of prompt file [without extension] [optional]")
     parser.add_argument("-m", "--model", default=DEFAULT_MODEL, help="OpenRouter model ID [default: " + DEFAULT_MODEL + "] [optional]")
     parser.add_argument("--diff", action="store_true", help="write result to [filename].new[.ext] and print a diff instead of raw output")
     parser.add_argument("--list", action="store_true", help="only list available prompts")
-    parser.add_argument("files", nargs="*", help="input files [reads from stdin if omitted]")
+    parser.add_argument("files", nargs="*", help="input files(s) [reads from stdin if omitted]")
     args = parser.parse_args()
 
     if args.list:
