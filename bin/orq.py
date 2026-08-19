@@ -7,6 +7,7 @@ import argparse
 import contextlib
 import difflib
 import json
+import os
 import subprocess
 import sys
 import threading
@@ -105,7 +106,10 @@ def show_wait_spinner(message: str) -> Iterator[None]:
         yield
         return
 
-    frames = "|/-\\"
+    frames = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
+    use_color = os.environ.get("TERM", "dumb") != "dumb" and "NO_COLOR" not in os.environ
+    color_start = "\033[38;5;39m" if use_color else ""
+    color_end = "\033[0m" if use_color else ""
     stop_event = threading.Event()
 
     def animate() -> None:
@@ -113,10 +117,10 @@ def show_wait_spinner(message: str) -> Iterator[None]:
         while not stop_event.is_set():
             frame = frames[idx % len(frames)]
             idx += 1
-            print(f"\r[{frame}] {message}", end="", file=sys.stderr, flush=True)
+            print(f"\r{color_start}{frame}{color_end} {message}", end="", file=sys.stderr, flush=True)
             if stop_event.wait(0.1):
                 break
-        clear = " " * (len(message) + 6)
+        clear = " " * (len(message) + 2)
         print(f"\r{clear}\r", end="", file=sys.stderr, flush=True)
 
     thread = threading.Thread(target=animate, daemon=True)
@@ -187,7 +191,7 @@ def main() -> None:
     system_prompt = build_system_prompt(args.prompt)
     user_input = gather_input(args.files)
 
-    with show_wait_spinner("Waiting for ORQ response..."):
+    with show_wait_spinner("waiting for orq response..."):
         result = call_openrouter(api_key, args.model, system_prompt, user_input)
 
     if args.diff:
