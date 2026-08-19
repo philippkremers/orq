@@ -191,7 +191,7 @@ def main() -> None:
     system_prompt = build_system_prompt(args.prompt)
     user_input = gather_input(args.files)
 
-    with show_wait_spinner("waiting for orq response..."):
+    with show_wait_spinner("waiting for server response..."):
         result = call_openrouter(api_key, args.model, system_prompt, user_input)
 
     if args.diff:
