@@ -4,12 +4,15 @@
 from __future__ import annotations
 
 import argparse
+import contextlib
 import difflib
 import json
 import subprocess
 import sys
+import threading
 import urllib.error
 import urllib.request
+from collections.abc import Iterator
 from pathlib import Path
 
 DEFAULT_MODEL = "nvidia/nemotron-3-ultra-550b-a55b:free"
@@ -96,6 +99,35 @@ def gather_input(files: list[str]) -> str:
     sys.exit("Error: No input given.")
 
 
+@contextlib.contextmanager
+def show_wait_spinner(message: str) -> Iterator[None]:
+    if not sys.stderr.isatty():
+        yield
+        return
+
+    frames = "|/-\\"
+    stop_event = threading.Event()
+
+    def animate() -> None:
+        idx = 0
+        while not stop_event.is_set():
+            frame = frames[idx % len(frames)]
+            idx += 1
+            print(f"\r[{frame}] {message}", end="", file=sys.stderr, flush=True)
+            if stop_event.wait(0.1):
+                break
+        clear = " " * (len(message) + 6)
+        print(f"\r{clear}\r", end="", file=sys.stderr, flush=True)
+
+    thread = threading.Thread(target=animate, daemon=True)
+    thread.start()
+    try:
+        yield
+    finally:
+        stop_event.set()
+        thread.join()
+
+
 def call_openrouter(api_key: str, model: str, system_prompt: str, user_input: str) -> str:
     payload = {
         "model": model,
@@ -155,7 +187,8 @@ def main() -> None:
     system_prompt = build_system_prompt(args.prompt)
     user_input = gather_input(args.files)
 
-    result = call_openrouter(api_key, args.model, system_prompt, user_input)
+    with show_wait_spinner("Waiting for ORQ response..."):
+        result = call_openrouter(api_key, args.model, system_prompt, user_input)
 
     if args.diff:
         if len(args.files) != 1:
