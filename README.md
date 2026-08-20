@@ -1,6 +1,16 @@
 # orq
 
-orq stands for **O**pen **R**outer **Q**uery and is a small CLI wrapper for using OpenRouter AI models with reusable system prompts and automatic context retrieval. I wrote orq specifically for academic writing tasks.
+`orq` stands for OpenRouter Query and is a small CLI wrapper for using (OpenRouter)[https://openrouter.ai/] API AI models with reusable system prompts and automatic context retrieval. I wrote `orq` specifically trying to borrow some of the workflow conventions from software development (reusable configuration files, project-specific context loading, and version-control) and apply them to academic writing instead of code.
+
+A quick example, running a paragraph through an academic polishing prompt:
+
+```bash
+orq -p academic-polishing "Here it becomes palpably evident which is the most certain path from natural science to mysticism. It is not the extravagant theorising of the philosophy of nature, but the shallowest empiricism that spurns all theory and distrusts all thought. It is not a priori necessity that proves the existence .of spirits, but the empirical observations of Messrs. Wallace, Crookes, and Co."
+The most certain path from natural science to mysticism is not the extravagant theorising of the philosophy of nature, but the shallowest empiricism, which spurns all theory and distrusts all thought. It is not a priori necessity that proves the existence of spirits, but the empirical observations of Messrs. Wallace, Crookes, and Co.
+```
+
+`orq` can also be integrated into editors like KDE Kate and VS Code as a keyboard shortcut, so that a text selection can be sent through a chosen prompt and replaced in place without leaving the editor.
+
 
 ## Installation
 
@@ -11,7 +21,7 @@ chmod +x bin/orq.py
 ln -s "$(pwd)/bin/orq.py" ~/.local/bin/orq
 ```
 
-For security reasons, orq requires the external library `secret-tool` to store your OpenRouter API key securely in the system keyring. This ensures that your API key never gets written to disk in plaintext. How you install `secret-tool` will depends on your operating system.
+You need a free (OpenRouter)[https://openrouter.ai/] API key to run orq. For security reasons, orq requires the external library `secret-tool` to store your OpenRouter API key securely in the system keyring. This ensures that your API key never gets written to disk in plaintext. How you install `secret-tool` will depends on your operating system.
 
 **Arch**
 
@@ -60,7 +70,7 @@ You can also pass an entire file to orq:
 orq -p academic-polishing draft.md
 ```
 
-From a file, with output written to draft.new.md and a diff printed
+From a file, with output written to draft.new.md and merely print the difference on stdout:
 
 ```bash
 orq -p academic-polishing --diff draft.md
@@ -83,6 +93,8 @@ You can also chose a custom AI model for OpenRouter:
 ```bash
 orq -p academic-polishing -m poolside/laguna-s-2.1:free "A system can generally be steered more accurately if it uses feedforward, based on prediction of the future, in combination with feedback, to correct the errors of the past."
 ```
+
+Some other free OpenRouter models include `google/gemma-4-26b-a4b-it:free`, `openai/gpt-oss-20b:free`, `cohere/north-mini-code:free`, and `poolside/laguna-s-2.1:free`.
 
 Technically, you can rawdog orq as well by using it without parameters. In that case, the input is forwarded to the AI model without any specific context:
 
@@ -109,3 +121,56 @@ If orq finds a file named `AGENTS.md` in your current working directory (or any 
 
 So, you should use `AGENTS.md` for standing context for a project: register, terminology, citation rules, editing scope, anything you'd otherwise have to retype into every prompt. See the project for a sample `AGENTS.md` template.
 
+## Editor Integration
+
+### KDE Kate
+
+Kate ships an External Tools plugin, no extra installation needed.
+
+1. Open `Settings > Configure Kate > Plugins` and enable **External Tools**.
+2. Open `Tools > External Tools > Configure > Add Tool` and fill in:
+
+| Field | Value |
+|---|---|
+| Name | `orq` |
+| Executable | `orq` |
+| Working Directory | `%{Document:Path}` |
+| Arguments | `--prompt academic-polishing "%{Document:Selection:Text}"` |
+| Output | `Replace Selected Text` |
+
+3. Open `Settings > Configure Shortcuts`, search for the tool by name (`orq`), and assign a key combination such as `Ctrl+Alt+A`.
+4. Select text in the editor and press the shortcut. The selection is sent to `orq` and replaced in place with the model's output.
+
+You can swap `academic-polishing` for any other prompt name to add more tools, e.g. one for `natural-writing` each bound to its own shortcut.
+
+### VS Code
+
+VS Code has no built-in way to pipe a selection through an external command, so this requires the `Edit with Shell` extension (`ryu1kn.edit-with-shell`).
+
+1. Search for `Edit with Shell` in the Extensions marketplace and install it.
+2. Select text, open the command palette (`Ctrl+Shift+P`) and run `Edit with Shell Command`. Enter:
+
+```
+orq --prompt academic-polishing
+```
+
+The selection is piped to `orq` via stdin and replaced with its output.
+
+3. Register the command as one of the extension's quick commands, then add a keybinding in `keybindings.json`:
+
+```json
+{
+  "key": "ctrl+alt+a",
+  "command": "editWithShell.runQuickCommand1"
+}
+```
+
+Set the corresponding quick command in your VS Code settings:
+
+```json
+"editWithShell.favoriteCommands": [
+  { "id": "runQuickCommand1", "command": "orq --prompt academic-polishing" }
+]
+```
+
+4. Select text and press the shortcut to run the bound command directly, skipping the command palette.
