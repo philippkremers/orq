@@ -36,8 +36,8 @@ secret-tool store --label="OpenRouter API Key" service openrouter account defaul
 | Flag | Description |
 |---|---|
 | `-p`, `--prompt` | The name of a prompt file (must have either `.txt` or `.md` extension). |
-| `-m`, `--model` | OpenRouter model id (default: `nvidia/nemotron-3-ultra-550b-a55b:free`) |
-| `--diff` | Write result to `<file>.new<ext>` and print a unified diff instead of raw output. |
+| `-m`, `--model` | OpenRouter model id (default: `nvidia/nemotron-3-ultra-550b-a55b:free`). |
+| `--diff` | Write result to `[file].new[.ext]` and print a unified diff instead of raw output. |
 | `--list` | List available prompts and exit. |
 
 
@@ -51,37 +51,37 @@ orq --list
 You can pass text directly as an argument to orq:
 
 ```bash
-orq -p polish-academic-en 'One trouble with our institutions is ….'
+orq --prompt academic-polishing "A system can generally be steered more accurately if it uses feedforward, based on prediction of the future, in combination with feedback, to correct the errors of the past. However, forming expectations to deal with uncertainty creates its own problems. Feedforward can have unfortunate destabilizing effects, for a system can overreact to its predictions and go into unstable oscillations. Feedforward in markets can become especially destabilizing when each actor tries to anticipate the actions of the others (and hence their expectations)."
 ```
 
 You can also pass an entire file to orq: 
 
 ```bash
-orq -p polish-academic-en draft.md
+orq -p academic-polishing draft.md
 ```
 
 From a file, with output written to draft.new.md and a diff printed
 
 ```bash
-orq -p polish-en --diff draft.md
+orq -p academic-polishing --diff draft.md
 ```
 
 You can connect orq via pipe with other commands via stdin: 
 
 ```bash
-cat notes.md | orq -p critique
+cat notes.md | orq -p academic-polishing
 ```
 
 You can concat multiple files concatenated as input to orq as well:
 
 ```bash
-orq -p critique ch1.md ch2.md
+orq -p academic-polishing chapter1.md chapter2.md
 ```
 
 You can also chose a custom AI model for OpenRouter:
 
 ```bash
-orq -p academic -m anthropic/claude-3.5-sonnet 'One trouble with our institutions is ….'
+orq -p academic-polishing -m poolside/laguna-s-2.1:free "A system can generally be steered more accurately if it uses feedforward, based on prediction of the future, in combination with feedback, to correct the errors of the past."
 ```
 
 Technically, you can rawdog orq as well by using it without parameters. In that case, the input is forwarded to the AI model without any specific context:
@@ -101,10 +101,7 @@ Resolution order (first match wins):
 3. `[orq’s own directory]/../prompts/[name].md`
 4. `[orq’s own directory]/../prompts/[name].txt`
 
-This means a project-local `prompts/` folder overrides your global one,
-so you can have a shared set of general-purpose prompts plus
-project-specific overrides that take priority when you're `cd`'d into
-that project.
+This means a project-local `prompts/` folder overrides your global one.
 
 ## Auto-Loading Context
 
