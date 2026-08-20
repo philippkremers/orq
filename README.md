@@ -1,11 +1,15 @@
 # orq
 
-`orq` stands for OpenRouter Query and is a small CLI wrapper for using (OpenRouter)[https://openrouter.ai/] API AI models with reusable system prompts and automatic context retrieval. I wrote `orq` specifically trying to borrow some of the workflow conventions from software development (reusable configuration files, project-specific context loading, and version-control) and apply them to academic writing instead of code.
+`orq` stands for OpenRouter Query and is a small CLI wrapper for using [OpenRouter API AI models](https://openrouter.ai/) with reusable system prompts and automatic context retrieval. I wrote `orq` specifically trying to borrow some of the workflow conventions from software development (reusable configuration files, project-specific context loading, and version-control) and apply them to writing prose instead of code.
 
 A quick example, running a paragraph through an academic polishing prompt:
 
 ```bash
 orq -p academic-polishing "Here it becomes palpably evident which is the most certain path from natural science to mysticism. It is not the extravagant theorising of the philosophy of nature, but the shallowest empiricism that spurns all theory and distrusts all thought. It is not a priori necessity that proves the existence .of spirits, but the empirical observations of Messrs. Wallace, Crookes, and Co."
+```
+
+*Output:*
+```
 The most certain path from natural science to mysticism is not the extravagant theorising of the philosophy of nature, but the shallowest empiricism, which spurns all theory and distrusts all thought. It is not a priori necessity that proves the existence of spirits, but the empirical observations of Messrs. Wallace, Crookes, and Co.
 ```
 
@@ -21,7 +25,7 @@ chmod +x bin/orq.py
 ln -s "$(pwd)/bin/orq.py" ~/.local/bin/orq
 ```
 
-You need a free (OpenRouter)[https://openrouter.ai/] API key to run orq. For security reasons, orq requires the external library `secret-tool` to store your OpenRouter API key securely in the system keyring. This ensures that your API key never gets written to disk in plaintext. How you install `secret-tool` will depends on your operating system.
+You need a free [OpenRouter](https://openrouter.ai/) API key to run `orq`. For security reasons, `orq` requires the external library `secret-tool` to store your OpenRouter API key securely in the system keyring. This ensures that your API key never gets written to disk in plaintext. How you install `secret-tool` will depends on your operating system.
 
 **Arch**
 
@@ -58,13 +62,13 @@ List all available prompts (project-specific and global):
 orq --list
 ```
 
-You can pass text directly as an argument to orq:
+You can pass text directly as an argument to `orq`:
 
 ```bash
 orq --prompt academic-polishing "A system can generally be steered more accurately if it uses feedforward, based on prediction of the future, in combination with feedback, to correct the errors of the past. However, forming expectations to deal with uncertainty creates its own problems. Feedforward can have unfortunate destabilizing effects, for a system can overreact to its predictions and go into unstable oscillations. Feedforward in markets can become especially destabilizing when each actor tries to anticipate the actions of the others (and hence their expectations)."
 ```
 
-You can also pass an entire file to orq: 
+You can also pass an entire file to `orq`: 
 
 ```bash
 orq -p academic-polishing draft.md
@@ -76,13 +80,13 @@ From a file, with output written to draft.new.md and merely print the difference
 orq -p academic-polishing --diff draft.md
 ```
 
-You can connect orq via pipe with other commands via stdin: 
+You can connect `orq` via pipe with other commands via stdin: 
 
 ```bash
 cat notes.md | orq -p academic-polishing
 ```
 
-You can concat multiple files concatenated as input to orq as well:
+You can concat multiple files concatenated as input to `orq` as well:
 
 ```bash
 orq -p academic-polishing chapter1.md chapter2.md
@@ -96,7 +100,7 @@ orq -p academic-polishing -m poolside/laguna-s-2.1:free "A system can generally 
 
 Some other free OpenRouter models include `google/gemma-4-26b-a4b-it:free`, `openai/gpt-oss-20b:free`, `cohere/north-mini-code:free`, and `poolside/laguna-s-2.1:free`.
 
-Technically, you can rawdog orq as well by using it without parameters. In that case, the input is forwarded to the AI model without any specific context:
+Technically, you can rawdog `orq` as well by using it without parameters. In that case, the input is forwarded to the AI model without any specific context:
 
 ```bash
 orq 'What ingredients do I need for banana bread?'
@@ -117,9 +121,7 @@ This means a project-local `prompts/` folder overrides your global one.
 
 ## Auto-Loading Context
 
-If orq finds a file named `AGENTS.md` in your current working directory (or any of its parent directories), its content is automatically prepended to the system prompt on every orq call made from that directory or subdirectory. (So, orq looks for `AGENTS.md` file in a similar way as git looks for `.git`.)
-
-So, you should use `AGENTS.md` for standing context for a project: register, terminology, citation rules, editing scope, anything you'd otherwise have to retype into every prompt. See the project for a sample `AGENTS.md` template.
+If `orq` finds a file named `AGENTS.md` in your current working directory (or any of its parent directories), its content is automatically prepended to the system prompt on every `orq` call made from that directory or subdirectory. (So, `orq` looks for `AGENTS.md` file in a similar way as git looks for `.git`.) So, you should use `AGENTS.md` for standing context for a given project (e.g., outline, terminology, citation rules, anything you would otherwise have to retype into every prompt).
 
 ## Editor Integration
 
@@ -127,7 +129,7 @@ So, you should use `AGENTS.md` for standing context for a project: register, ter
 
 Kate ships an External Tools plugin, no extra installation needed.
 
-1. Open `Settings > Configure Kate > Plugins` and enable **External Tools**.
+1. Open `Settings > Configure Kate > Plugins` and enable *External Tools*.
 2. Open `Tools > External Tools > Configure > Add Tool` and fill in:
 
 | Field | Value |
