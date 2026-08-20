@@ -1,6 +1,6 @@
 # orq
 
-`orq` stands for OpenRouter Query and is a small CLI wrapper for using [OpenRouter API AI models](https://openrouter.ai/) with reusable system prompts and automatic context retrieval. I wrote `orq` specifically trying to borrow some of the workflow conventions from software development (reusable configuration files, project-specific context loading, and version-control) and apply them to writing prose instead of code.
+`orq` stands for OpenRouter Query and is a small CLI wrapper for using [OpenRouter AI models](https://openrouter.ai/) with reusable system prompts and automatic context retrieval. I wrote `orq` specifically trying to borrow some of the workflow conventions from software development (reusable configuration files, project-specific context loading, and version-control) and apply them to writing prose instead of code.
 
 A quick example, running a paragraph through an academic polishing prompt:
 
