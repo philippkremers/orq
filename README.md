@@ -110,8 +110,8 @@ Resolution order (first match wins):
 
 1. `./prompts/[name].md`
 2. `./prompts/[name].txt`
-3. `[orq’s own directory]/../prompts/[name].md`
-4. `[orq’s own directory]/../prompts/[name].txt`
+3. `[orq directory]/../prompts/[name].md`
+4. `[orq directory]/../prompts/[name].txt`
 
 This means a project-local `prompts/` folder overrides your global one.
 
